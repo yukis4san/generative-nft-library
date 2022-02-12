@@ -2,6 +2,7 @@
 # coding: utf-8
 
 # Import required libraries
+
 from PIL import Image
 import pandas as pd
 import numpy as np
@@ -20,7 +21,7 @@ from config import CONFIG
 
 # Parse the configuration file and make sure it's valid
 def parse_config():
-    
+
     # Input traits must be placed in the assets folder. Change this value if you want to name it something else.
     assets_path = 'assets'
 
@@ -29,14 +30,14 @@ def parse_config():
 
         # Go into assets/ to look for layer folders
         layer_path = os.path.join(assets_path, layer['directory'])
-        
+
         # Get trait array in sorted order
         traits = sorted([trait for trait in os.listdir(layer_path) if trait[0] != '.'])
 
         # If layer is not required, add a None to the start of the traits array
         if not layer['required']:
             traits = [None] + traits
-        
+
         # Generate final rarity weights
         if layer['rarity_weights'] is None:
             rarities = [1 for x in traits]
@@ -47,9 +48,9 @@ def parse_config():
             rarities = layer['rarity_weights']
         else:
             raise ValueError("Rarity weights is invalid")
-        
+
         rarities = get_weighted_rarities(rarities)
-        
+
         # Re-assign final values to main CONFIG
         layer['rarity_weights'] = rarities
         layer['cum_rarity_weights'] = np.cumsum(rarities)
@@ -62,17 +63,17 @@ def get_weighted_rarities(arr):
 
 # Generate a single image given an array of filepaths representing layers
 def generate_single_image(filepaths, output_filename=None):
-    
+
     # Treat the first layer as the background
     bg = Image.open(os.path.join('assets', filepaths[0]))
-    
-    
+
+
     # Loop through layers 1 to n and stack them on top of another
     for filepath in filepaths[1:]:
         if filepath.endswith('.png'):
             img = Image.open(os.path.join('assets', filepath))
             bg.paste(img, (0,0), img)
-    
+
     # Save the final image into desired location
     if output_filename is not None:
         bg.save(output_filename)
@@ -84,8 +85,8 @@ def generate_single_image(filepaths, output_filename=None):
 
 
 # Generate a single image with all possible traits
-# generate_single_image(['Background/green.png', 
-#                        'Body/brown.png', 
+# generate_single_image(['Background/green.png',
+#                        'Body/brown.png',
 #                        'Expressions/standard.png',
 #                        'Head Gear/std_crown.png',
 #                        'Shirt/blue_dot.png',
@@ -96,7 +97,7 @@ def generate_single_image(filepaths, output_filename=None):
 
 # Get total number of distinct possible combinations
 def get_total_combinations():
-    
+
     total = 1
     for layer in CONFIG:
         total = total * len(layer['traits'])
@@ -105,22 +106,22 @@ def get_total_combinations():
 
 # Select an index based on rarity weights
 def select_index(cum_rarities, rand):
-    
+
     cum_rarities = [0] + list(cum_rarities)
     for i in range(len(cum_rarities) - 1):
         if rand >= cum_rarities[i] and rand <= cum_rarities[i+1]:
             return i
-    
+
     # Should not reach here if everything works okay
     return None
 
 
 # Generate a set of traits given rarities
 def generate_trait_set_from_config():
-    
+
     trait_set = []
     trait_paths = []
-    
+
     for layer in CONFIG:
         # Extract list of traits and cumulative rarity weights
         traits, cum_rarities = layer['traits'], layer['cum_rarity_weights']
@@ -138,13 +139,13 @@ def generate_trait_set_from_config():
         if traits[idx] is not None:
             trait_path = os.path.join(layer['directory'], traits[idx])
             trait_paths.append(trait_path)
-        
+
     return trait_set, trait_paths
 
 
 # Generate the image set. Don't change drop_dup
 def generate_images(edition, count, drop_dup=True):
-    
+
     # Initialize an empty rarity table
     rarity_table = {}
     for layer in CONFIG:
@@ -155,34 +156,34 @@ def generate_images(edition, count, drop_dup=True):
 
     # Will require this to name final images as 000, 001,...
     zfill_count = len(str(count - 1))
-    
+
     # Create output directory if it doesn't exist
     if not os.path.exists(op_path):
         os.makedirs(op_path)
-      
+
     # Create the images
     for n in progressbar(range(count)):
-        
+
         # Set image name
         image_name = str(n).zfill(zfill_count) + '.png'
-        
+
         # Get a random set of valid traits based on rarity weights
         trait_sets, trait_paths = generate_trait_set_from_config()
 
         # Generate the actual image
         generate_single_image(trait_paths, os.path.join(op_path, image_name))
-        
+
         # Populate the rarity table with metadata of newly created image
         for idx, trait in enumerate(trait_sets):
             if trait is not None:
                 rarity_table[CONFIG[idx]['name']].append(trait[: -1 * len('.png')])
             else:
                 rarity_table[CONFIG[idx]['name']].append('none')
-    
+
     # Create the final rarity table by removing duplicate creat
     rarity_table = pd.DataFrame(rarity_table).drop_duplicates()
     print("Generated %i images, %i are distinct" % (count, rarity_table.shape[0]))
-    
+
     if drop_dup:
         # Get list of duplicate images
         img_tb_removed = sorted(list(set(range(count)) - set(rarity_table.index)))
@@ -197,8 +198,8 @@ def generate_images(edition, count, drop_dup=True):
         # Rename images such that it is sequentialluy numbered
         for idx, img in enumerate(sorted(os.listdir(op_path))):
             os.rename(os.path.join(op_path, img), os.path.join(op_path, str(idx).zfill(zfill_count) + '.png'))
-    
-    
+
+
     # Modify rarity table to reflect removals
     rarity_table = rarity_table.reset_index()
     rarity_table = rarity_table.drop('index', axis=1)
@@ -221,7 +222,7 @@ def main():
         num_avatars = int(input())
         if num_avatars > 0:
             break
-    
+
     print("What would you like to call this edition?: ")
     edition_name = input()
 
