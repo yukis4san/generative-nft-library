@@ -28,11 +28,7 @@ OpenSeaメタデータ要件（ひいては一般的なNFTメタデータ規格�
 💻 インストール方法
 ----
 
-**このリポジトリをあなたのGithubアカウントにクローンしてください**。
-
-```
-git clone git@github.com:yukis4san/generative-nft-library.git
-```
+**このリポジトリをあなたのGithubアカウントにフォークしてください**。
 
 **必要なパッケージのインストール**
 

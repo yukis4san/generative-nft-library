@@ -1,24 +1,24 @@
-# This file MUST be configured in order for the code to run properly
+# このファイルは、コードを正しく実行するために設定しなければなりません。
 
-# Make sure you put all your input images into an 'assets' folder. 
-# Each layer (or category) of images must be put in a folder of its own.
+# 全ての入力画像を 'assets' フォルダに入れるようにしてください。
+# 画像の各レイヤー(またはカテゴリ)は、それ自身のフォルダに入れる必要があります。
 
-# CONFIG is an array of objects where each object represents a layer
-# THESE LAYERS MUST BE ORDERED.
+# CONFIGはオブジェクトの配列で、各オブジェクトはレイヤーを表します。
+# これらのレイヤーは順番に並べる必要があります。
 
-# Each layer needs to specify the following
-# 1. id: A number representing a particular layer
-# 2. name: The name of the layer. Does not necessarily have to be the same as the directory name containing the layer images.
-# 3. directory: The folder inside assets that contain traits for the particular layer
-# 4. required: If the particular layer is required (True) or optional (False). The first layer must always be set to true.
-# 5. rarity_weights: Denotes the rarity distribution of traits. It can take on three types of values.
-#       - None: This makes all the traits defined in the layer equally rare (or common)
-#       - "random": Assigns rarity weights at random. 
-#       - array: An array of numbers where each number represents a weight. 
-#                If required is True, this array must be equal to the number of images in the layer directory. The first number is  the weight of the first image (in alphabetical order) and so on...
-#                If required is False, this array must be equal to one plus the number of images in the layer directory. The first number is the weight of having no image at all for this layer. The second number is the weight of the first image and so on...
+# 各レイヤーには、以下を指定する必要があります。
+# 1. id: 特定のレイヤーを表す番号
+# 2. name: レイヤーの名前。レイヤーイメージが格納されているディレクトリ名と同じである必要はない。
+# 3. directory: 特定のレイヤーの特徴を含む assets 内のフォルダー。
+# 4. required: 特定のレイヤーが必須(True)またはオプション(False)である場合。最初のレイヤーは常にTrueに設定する必要がある。
+# 5. rarity_weights: 形質の希少性分布を表す。3種類の値を取ることができる。
+#   - None このレイヤーで定義されているすべての形質のレア度が等しくなる(または共通になる)
+#   - "random"。レアリティの重みをランダムに割り当てる。
+#   - array: 数値の配列で、各数値が重みを表す。
+#       - required が True の場合、この配列はレイヤディレクトリにあるイメージの数と等しくなければ なりません。最初の数値が最初のイメージの重み(アルファベット順)となり, 以降は同じです.
+#       - required が False の場合、この配列は 1 にレイヤーディレクトリ内のイメージの数を足した数に等しくなければなりません。最初の数値は、このレイヤーに画像が全くない場合の重み付けです。2番目の数値は、最初の画像の重みを表し、以下同様です。
 
-# Be sure to check out the tutorial in the README for more details.                
+# 詳しくはREADMEにあるチュートリアルを必ずご覧ください。
 
 CONFIG = [
     {
